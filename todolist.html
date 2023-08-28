@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>To-Do App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .task {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .task input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    .completed {
+      text-decoration: line-through;
+    }
+
+    #new-task-form {
+      margin-bottom: 20px;
+    }
+
+    #new-task-form input[type="text"] {
+      width: 250px;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>To-Do App</h1>
+
+  <div id="new-task-form">
+    <input type="text" id="task-input" placeholder="Add a new task">
+    <button id="add-task-btn">Add Task</button>
+  </div>
+
+  <h2>Pending Tasks</h2>
+  <div id="pending-tasks"></div>
+
+  <h2>Completed Tasks</h2>
+  <div id="completed-tasks"></div>
+
+  <script>
+    // Store tasks in an array
+    let tasks = [];
+
+    // Get current date and time
+    function getCurrentDateTime() {
+      const now = new Date();
+      return now.toLocaleString();
+    }
+
+    // Render tasks
+    function renderTasks() {
+      const pendingTasksContainer = document.getElementById('pending-tasks');
+      const completedTasksContainer = document.getElementById('completed-tasks');
+
+      // Clear containers
+      pendingTasksContainer.innerHTML = '';
+      completedTasksContainer.innerHTML = '';
+
+      tasks.forEach((task, index) => {
+        const taskElement = document.createElement('div');
+        taskElement.classList.add('task');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.completed;
+        checkbox.addEventListener('change', () => {
+          tasks[index].completed = checkbox.checked;
+          renderTasks();
+        });
+
+        const taskText = document.createElement('span');
+        taskText.innerText = task.title;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerText = 'Delete';
+        deleteBtn.addEventListener('click', () => {
+          tasks.splice(index, 1);
+          renderTasks();
+        });
+
+        taskElement.appendChild(checkbox);
+        taskElement.appendChild(taskText);
+        taskElement.appendChild(deleteBtn);
+
+        if (task.completed) {
+          taskElement.classList.add('completed');
+          completedTasksContainer.appendChild(taskElement);
+        } else {
+          pendingTasksContainer.appendChild(taskElement);
+        }
+      });
+    }
+
+    // Add a new task
+    function addTask() {
+      const taskInput = document.getElementById('task-input');
+      const title = taskInput.value.trim();
+
+      if (title !== '') {
+        const newTask = {
+          title: title,
+          completed: false,
+          created: getCurrentDateTime(),
+          completedAt: ''
+        };
+
+        tasks.push(newTask);
+        taskInput.value = '';
+        renderTasks();
+      }
+    }
+
+    // Add task button click event
+    const addTaskButton = document.getElementById('add-task-btn');
+    addTaskButton.addEventListener('click', addTask);
+
+    // Initialize the app
+    renderTasks();
+  </script>
+</body>
+</html>
